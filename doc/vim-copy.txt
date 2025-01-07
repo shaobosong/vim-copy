@@ -1,0 +1,77 @@
+*vim-copy.txt*  Copy text among different vim sessions
+
+Author:  Shaobo Song <shnusongshaobo@gmail.com>
+License: Same terms as Vim itself (see |license|)
+
+Copy text or content from one session and put it into another session.
+
+==============================================================================
+CONTENTS                                                  *vim-copy-contents*
+
+1. Introduction ................ |vim-copy-introduction|
+2. Mappings .................... |vim-copy-mappings|
+3. Configuration ............... |vim-copy-configuration|
+
+==============================================================================
+INTRODUCTION                                              *vim-copy-introduction*
+
+This plugin allow user to copy text or content from one session and put it
+into another session.
+
+To use this plugin, simply install it and map the provided <Plug> mappings to
+your preferred keys.
+
+==============================================================================
+MAPPINGS                                                     *vim-copy-mappings*
+
+The plugin provides the following mappings:
+
+                                        *gy*
+gy{motion}    Copy text like |y|{motion}.
+
+                                        *gyy*
+gyy           Copy text like |yy.|
+
+                                        *v_gy*
+{Visual}gy    Copy selected text in visual mode like |v_y|.
+
+                                        *gyp*
+gyp           Put text like |p|.
+
+                                        *gyP*
+gyP           Put text like |P|.
+
+                                        *v_gp*
+{Visual}gp    The previously selected text is put in the |g:vim_copy_clipboard|.
+
+                                        *v_gP*
+{Visual}gP    The |g:vim_copy_clipboard| is not changed.
+
+You can customize your own mappings in your `.vimrc` file. For example:
+>
+    nmap gy <Plug>(vim-copy-normal)
+    nmap gyy <Plug>(vim-copy-line-normal)
+
+    xmap gy <Plug>(vim-copy-visual)
+
+    nmap gyp <Plug>(vim-paste)
+    nmap gyP <Plug>(vim-Paste)
+
+    xmap gp <Plug>(vim-paste)
+    xmap gP <Plug>(vim-Paste)
+<
+==============================================================================
+CONFIGURATION                                           *vim-copy-configuration*
+
+                                                          *g:vim_copy_clipboard*
+g:vim_copy_clipboard~
+Default: '$TEMP/vim-copy-clipboard'
+
+Use this option to specify location of your clipboard.
+
+Example:
+>
+    let g:vim_copy_clipboard = '~/.vim-copy-clipboard'
+<
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:

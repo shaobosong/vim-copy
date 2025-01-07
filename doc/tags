@@ -1,0 +1,12 @@
+gy	vim-copy.txt	/*gy*
+gyy	vim-copy.txt	/*gyy*
+v_gy	vim-copy.txt	/*v_gy*
+gyp	vim-copy.txt	/*gyp*
+gyP	vim-copy.txt	/*gyP*
+v_gp	vim-copy.txt	/*v_gp*
+v_gP	vim-copy.txt	/*v_gP*
+g:vim_copy_clipboard	vim-copy.txt	/*g:vim_copy_clipboard*
+vim-copy-introduction	vim-copy.txt	/*vim-copy-introduction*
+vim-copy-mappings	vim-copy.txt	/*vim-copy-mappings*
+vim-copy-configuration	vim-copy.txt	/*vim-copy-configuration*
+vim-copy.txt	vim-copy.txt	/*vim-copy.txt*

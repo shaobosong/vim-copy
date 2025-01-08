@@ -1,9 +1,9 @@
-*vim-copy.txt*  Copy text among different vim sessions
+*vim-copy.txt*  Copy register information among different vim sessions
 
 Author:  Shaobo Song <shnusongshaobo@gmail.com>
 License: Same terms as Vim itself (see |license|)
 
-Copy text or content from one session and put it into another session.
+Copy register information from one session and put it into another session.
 
 ==============================================================================
 CONTENTS                                                  *vim-copy-contents*
@@ -35,11 +35,11 @@ gyy           Copy text like |yy.|
                                         *v_gy*
 {Visual}gy    Copy selected text in visual mode like |v_y|.
 
-                                        *gyp*
-gyp           Put text like |p|.
+                                        *gp*
+gp            Put text like |p|.
 
-                                        *gyP*
-gyP           Put text like |P|.
+                                        *gP*
+gP            Put text like |P|.
 
                                         *v_gp*
 {Visual}gp    The previously selected text is put in the |g:vim_copy_clipboard|.
@@ -49,17 +49,76 @@ gyP           Put text like |P|.
 
 You can customize your own mappings in your `.vimrc` file. For example:
 >
-    nmap gy <Plug>(vim-copy-normal)
-    nmap gyy <Plug>(vim-copy-line-normal)
+    nmap gy <Plug>(vim-copy)
+    nmap gyy <Plug>(vim-copy-line)
 
-    xmap gy <Plug>(vim-copy-visual)
+    xmap gy <Plug>(vim-copy)
 
-    nmap gyp <Plug>(vim-paste)
-    nmap gyP <Plug>(vim-Paste)
+    nmap gp <Plug>(vim-paste)
+    nmap gP <Plug>(vim-Paste)
 
     xmap gp <Plug>(vim-paste)
     xmap gP <Plug>(vim-Paste)
 <
+And you can also customize your own <Plug> mappings to extend the
+functionality of this plugin. For example:
+
+You can delete text and copy it to clipboard by using the following,
+>
+    nmap <expr> <silent> <Plug>(vim-delete)
+                \ vc#write_clipboard(#{
+                \ motion_command: 'd',
+                \ motion: v:true,
+                \ })
+
+    nmap <expr> <silent> <Plug>(vim-delete-line)
+                \ vc#directive(#{
+                \ func: function(
+                \     "vc#write_clipboard",
+                \     [#{command: v:count1 .. 'dd'}]
+                \ ),
+                \ })
+
+    xmap <expr> <silent> <Plug>(vim-delete)
+                \ vc#directive(#{
+                \ func: function("vc#write_clipboard", [#{command: 'gvd'}]),
+                \ })
+>
+You can write into clipboard from register directly by using the following,
+>
+    nmap <expr> <silent> <Plug>(vim-save-reg)
+                \ vc#directive(#{
+                \ func: function(
+                \     "vc#write_clipboard",
+                \     [#{register: '"'}]
+                \ ),
+                \ })
+<
+With the above feature, you can record a macro and execute it in another
+session by using the following,
+>
+    nmap <expr> <silent> <Plug>(vim-macro-record)
+                \ vc#directive(#{
+                \ func: function(
+                \     "vc#write_clipboard",
+                \     [#{register: 'q'}]
+                \ ),
+                \ })
+
+    nmap <expr> <silent> <Plug>(vim-macro-execute)
+                \ vc#directive(#{
+                \ func: function(
+                \     "vc#read_clipboard",
+                \     [#{command: '@q', register: 'q'}]
+                \ ),
+                \ })
+
+    nmap gm <Plug>(vim-macro-record)
+    nmap gM <Plug>(vim-macro-execute)
+<
+Type 'qq' to start recording a macro, and type |q| to stop recording a macro.
+Then type 'gm' to write 'q' register information into clipboard and type 'gM' to execute a macro.
+
 ==============================================================================
 CONFIGURATION                                           *vim-copy-configuration*
 

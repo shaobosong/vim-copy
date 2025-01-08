@@ -3,29 +3,52 @@ if exists('g:loaded_vim_copy')
 endif
 let g:loaded_vim_copy = 1
 
-nmap <expr> <silent> <Plug>(vim-copy-normal) vc#copy(#{motion: v:true})
-nmap <expr> <silent> <Plug>(vim-copy-line-normal)
-            \ ":\<c-u>call vc#copy(#{command: v:count1 .. 'yy'})\<cr>"
-xmap <expr> <silent> <Plug>(vim-copy-visual)
-            \ ":\<c-u>call vc#copy(#{command: 'gvy'})\<cr>"
+nmap <expr> <silent> <Plug>(vim-copy)
+            \ vc#write_clipboard(#{
+            \ motion_command: 'y',
+            \ motion: v:true,
+            \ })
+
+nmap <expr> <silent> <Plug>(vim-copy-line)
+            \ vc#directive(#{
+            \ func: function(
+            \     "vc#write_clipboard",
+            \     [#{command: v:count1 .. 'yy'}]
+            \ ),
+            \ })
+
+xmap <expr> <silent> <Plug>(vim-copy)
+            \ vc#directive(#{
+            \ func: function("vc#write_clipboard", [#{command: 'gvy'}]),
+            \ })
 
 nmap <expr> <silent> <Plug>(vim-paste)
-            \ ":\<c-u>call vc#paste(#{command: 'p'})\<cr>"
+            \ vc#directive(#{
+            \ func: function("vc#read_clipboard", [#{command: 'p'}]),
+            \ })
+
 nmap <expr> <silent> <Plug>(vim-Paste)
-            \ ":\<c-u>call vc#paste(#{command: 'P'})\<cr>"
+            \ vc#directive(#{
+            \ func: function("vc#read_clipboard", [#{command: 'P'}]),
+            \ })
 
 xmap <expr> <silent> <Plug>(vim-paste)
-            \ ":\<c-u>call vc#paste(#{command: 'gvp'})\<cr>"
+            \ vc#directive(#{
+            \ func: function("vc#read_clipboard", [#{command: 'gvp'}]),
+            \ })
+
 xmap <expr> <silent> <Plug>(vim-Paste)
-            \ ":\<c-u>call vc#paste(#{command: 'gvP'})\<cr>"
+            \ vc#directive(#{
+            \ func: function("vc#read_clipboard", [#{command: 'gvP'}]),
+            \ })
 
-nmap gy <Plug>(vim-copy-normal)
-nmap gyy <Plug>(vim-copy-line-normal)
+nmap gy <Plug>(vim-copy)
+nmap gyy <Plug>(vim-copy-line)
 
-nmap gyp <Plug>(vim-paste)
-nmap gyP <Plug>(vim-Paste)
+nmap gp <Plug>(vim-paste)
+nmap gP <Plug>(vim-Paste)
 
-xmap gy <Plug>(vim-copy-visual)
+xmap gy <Plug>(vim-copy)
 
 xmap gp <Plug>(vim-paste)
 xmap gP <Plug>(vim-Paste)

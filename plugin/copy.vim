@@ -4,43 +4,27 @@ endif
 let g:loaded_vim_copy = 1
 
 nmap <expr> <silent> <Plug>(vim-copy)
-            \ vc#write_clipboard(#{
-            \ motion_command: 'y',
-            \ motion: v:true,
-            \ })
+            \ vc#write_clipboard(#{type_command: '{r}y'})
 
-nmap <expr> <silent> <Plug>(vim-copy-line)
-            \ vc#directive(#{
-            \ func: function(
-            \     "vc#write_clipboard",
-            \     [#{command: v:count1 .. 'yy'}]
-            \ ),
-            \ })
+nmap <silent> <Plug>(vim-copy-line)
+            \ :<c-u>call vc#write_clipboard(#{command: v:count1 .. '{r}yy'})<cr>
 
-xmap <expr> <silent> <Plug>(vim-copy)
-            \ vc#directive(#{
-            \ func: function("vc#write_clipboard", [#{command: 'gvy'}]),
-            \ })
+xmap <silent> <Plug>(vim-copy)
+            \ :<c-u>call vc#write_clipboard(#{
+            \ command: join(['`<', '{r}y', visualmode(), '`>'], '')
+            \ })<cr>
 
-nmap <expr> <silent> <Plug>(vim-paste)
-            \ vc#directive(#{
-            \ func: function("vc#read_clipboard", [#{command: 'p'}]),
-            \ })
+nmap <silent> <Plug>(vim-paste)
+            \ :<c-u>call vc#read_clipboard(#{command: '{r}p'})<cr>
 
-nmap <expr> <silent> <Plug>(vim-Paste)
-            \ vc#directive(#{
-            \ func: function("vc#read_clipboard", [#{command: 'P'}]),
-            \ })
+nmap <silent> <Plug>(vim-Paste)
+            \ :<c-u>call vc#read_clipboard(#{command: '{r}P'})<cr>
 
-xmap <expr> <silent> <Plug>(vim-paste)
-            \ vc#directive(#{
-            \ func: function("vc#read_clipboard", [#{command: 'gvp'}]),
-            \ })
+xmap <silent> <Plug>(vim-paste)
+            \ :<c-u>call vc#read_clipboard(#{command: 'gv{r}p'})<cr>
 
-xmap <expr> <silent> <Plug>(vim-Paste)
-            \ vc#directive(#{
-            \ func: function("vc#read_clipboard", [#{command: 'gvP'}]),
-            \ })
+xmap <silent> <Plug>(vim-Paste)
+            \ :<c-u>call vc#read_clipboard(#{command: 'gv{r}P'})<cr>
 
 nmap gy <Plug>(vim-copy)
 nmap gyy <Plug>(vim-copy-line)

@@ -66,58 +66,41 @@ functionality of this plugin. For example:
 You can delete text and copy it to clipboard by using the following,
 >
     nmap <expr> <silent> <Plug>(vim-delete)
-                \ vc#write_clipboard(#{
-                \ motion_command: 'd',
-                \ motion: v:true,
-                \ })
+                \ vc#write_clipboard(#{type_command: '{r}d'})
 
-    nmap <expr> <silent> <Plug>(vim-delete-line)
-                \ vc#directive(#{
-                \ func: function(
-                \     "vc#write_clipboard",
-                \     [#{command: v:count1 .. 'dd'}]
-                \ ),
-                \ })
+    nmap <silent> <Plug>(vim-delete-line)
+                \ :<c-u>call vc#write_clipboard(
+                \ #{command: v:count1 .. '{r}dd'
+                \ })<cr>
 
-    xmap <expr> <silent> <Plug>(vim-delete)
-                \ vc#directive(#{
-                \ func: function("vc#write_clipboard", [#{command: 'gvd'}]),
-                \ })
+    xmap <silent> <Plug>(vim-delete)
+                \ :<c-u>call vc#write_clipboard(#{
+                \ command: join(['`<', '{r}d', visualmode(), '`>'], '')
+                \ })<cr>
 >
 You can write into clipboard from register directly by using the following,
 >
-    nmap <expr> <silent> <Plug>(vim-save-reg)
-                \ vc#directive(#{
-                \ func: function(
-                \     "vc#write_clipboard",
-                \     [#{register: '"'}]
-                \ ),
-                \ })
+    nmap <silent> <Plug>(vim-save-reg)
+                \ :<c-u>call vc#write_clipboard(#{register: 'q'})<cr>
 <
 With the above feature, you can record a macro and execute it in another
 session by using the following,
 >
-    nmap <expr> <silent> <Plug>(vim-macro-record)
-                \ vc#directive(#{
-                \ func: function(
-                \     "vc#write_clipboard",
-                \     [#{register: 'q'}]
-                \ ),
-                \ })
+    nmap <silent> <Plug>(vim-macro-record)
+                \ :<c-u>call vc#write_clipboard(#{register: 'q'})<cr>
 
-    nmap <expr> <silent> <Plug>(vim-macro-execute)
-                \ vc#directive(#{
-                \ func: function(
-                \     "vc#read_clipboard",
-                \     [#{command: '@q', register: 'q'}]
-                \ ),
-                \ })
+    nmap <silent> <Plug>(vim-macro-execute)
+                \ :<c-u>call vc#read_clipboard(#{
+                \ command: '@q',
+                \ register: 'q'
+                \ })<cr>
 
     nmap gm <Plug>(vim-macro-record)
     nmap gM <Plug>(vim-macro-execute)
 <
-Type 'qq' to start recording a macro, and type |q| to stop recording a macro.
-Then type 'gm' to write 'q' register information into clipboard and type 'gM' to execute a macro.
+Type "qq" to start recording a macro, and type "q" to stop recording a macro.
+Then type "gm" to write "q" register information into clipboard and type "gM"
+to execute a macro.
 
 ==============================================================================
 CONFIGURATION                                           *vim-copy-configuration*

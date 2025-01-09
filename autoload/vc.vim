@@ -24,27 +24,36 @@ endif
 "   line to the last line. The behavior is similar to 'y'.
 "
 " > blockwise-visual
-"   Bug: '`]' is a incorrect postion in this case using 'g@'.
-"        Unexpectedly, the column index is offset by -1 .
-"
-"   let s:motion_marks = #{
-"               \ char:  ["`[", 'v`]'],
-"               \ line:  ["`[", "']"],
-"               \ block: ["`[", '\<c-v>`]'],
-"               \ }
+"   Move to the first character, and yank a block to the last
+"   character.
 
-let s:motion_marks = #{
-            \ char:  ["`[", 'v`]'],
-            \ line:  ["`[", 'V`]'],
-            \ block: ["`[", '\<c-v>`]'],
+let s:type_marks = {
+            \ 'char':  ['`[', 'v`]'],
+            \ 'line':  ['`[', 'V`]'],
+            \ 'block': ['`[', '`]'],
             \ }
 
+let s:debug_verbose = v:false
+
+function! vc#verbose(msg, ...) abort
+  if s:debug_verbose
+    if type(a:msg) == type([])
+      for msg in a:msg
+        echomsg printf('[vc%s] %s', (a:0 ? ':'.a:1 : ''), msg)
+      endfor
+    else
+      echomsg printf('[vc%s] %s', (a:0 ? ':'.a:1 : ''), a:msg)
+    endif
+  endif
+endfunction
+
 function! s:write_clipboard(args) abort
-    let l:command = get(a:args, 'command', '')
-    let l:register = get(a:args, 'register', '"')
+    let l:register = a:args['register']
+    let l:command = substitute(a:args['command'], '{r}', '"' .. l:register, '')
     let l:save = #{
                 \ reginfo: getreginfo(l:register),
                 \ }
+    call vc#verbose('command: ' .. l:command)
     execute "normal!" l:command
     try
         call writefile([getreginfo(l:register)->string()], s:clipboard, 'b')
@@ -55,8 +64,8 @@ function! s:write_clipboard(args) abort
 endfunction
 
 function! s:read_clipboard(args) abort
-    let l:command = get(a:args, 'command', '')
-    let l:register = get(a:args, 'register', '"')
+    let l:register = a:args['register']
+    let l:command = substitute(a:args['command'], '{r}', '"' .. l:register, '')
     let l:save = #{
                 \ reginfo: getreginfo(l:register),
                 \ }
@@ -72,34 +81,30 @@ function! s:read_clipboard(args) abort
         call setreg(l:register, l:save.reginfo)
         return
     endif
+    call vc#verbose('command: ' .. l:command)
     execute "normal!" l:command
     call writefile([getreginfo(l:register)->string()], s:clipboard, 'b')
     call setreg(l:register, l:save.reginfo)
 endfunction
 
-function! vc#write_clipboard(args = {}, motion = '')
-    if get(a:args, "motion", v:false) == v:true
-        let a:args["motion"] = v:false
+function! vc#write_clipboard(args = {}, type = '')
+    if !empty(get(a:args, "type_command", '')) && empty(a:type)
         let &operatorfunc = function('vc#write_clipboard', [a:args])
         return 'g@'
     endif
-    if empty(a:motion)
+    if empty(a:type)
         let l:register = get(a:args, 'register', '"')
-        let l:command = join([
-                    \ '"' .. l:register,
-                    \ get(a:args, 'command', '')
-                    \ ], '')
+        let l:command = get(a:args, 'command', '')
         call s:write_clipboard(#{
                     \ command: l:command,
                     \ register: l:register,
                     \ })
     else
-        let l:marks = get(s:motion_marks, a:motion, [])
+        let l:marks = get(s:type_marks, a:type, ['', ''])
         let l:register = get(a:args, 'register', '"')
         let l:command = join([
                     \ l:marks[0],
-                    \ '"' .. l:register,
-                    \ get(a:args, 'motion_command', 'v'),
+                    \ get(a:args, 'type_command', ''),
                     \ l:marks[1]
                     \ ], '')
         call s:write_clipboard(#{
@@ -110,22 +115,12 @@ function! vc#write_clipboard(args = {}, motion = '')
 endfunction
 
 function! vc#read_clipboard(args = {})
-    call s:read_clipboard(a:args)
-endfunction
-
-function! vc#error(msg)
-    echomsg a:msg
-endfunction
-
-function! vc#directive(args = {})
-    let Fr = get(a:args, "func", function('vc#error', ['No function']))
-    return join([
-                \ ":\<c-u>call",
-                \ l:Fr->get("name"),
-                \ "(",
-                \ l:Fr->get("args")->join(','),
-                \ ")\<cr>",
-                \ ], ' ')
+    let l:register = get(a:args, 'register', '"')
+    let l:command = get(a:args, 'command', '')
+    call s:read_clipboard(#{
+                \ command: l:command,
+                \ register: l:register,
+                \ })
 endfunction
 
 let &cpo = s:save_cpo

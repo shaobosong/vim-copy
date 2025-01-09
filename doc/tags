@@ -1,7 +1,7 @@
 g:vim_copy_clipboard	vim-copy.txt	/*g:vim_copy_clipboard*
+gP	vim-copy.txt	/*gP*
+gp	vim-copy.txt	/*gp*
 gy	vim-copy.txt	/*gy*
-gyP	vim-copy.txt	/*gyP*
-gyp	vim-copy.txt	/*gyp*
 gyy	vim-copy.txt	/*gyy*
 v_gP	vim-copy.txt	/*v_gP*
 v_gp	vim-copy.txt	/*v_gp*
